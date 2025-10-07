@@ -1,0 +1,52 @@
+<!doctype html>
+<html th:replace="~{base :: layout ( ~{::title}, ~{::main}, ${todo} ) }" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title th:fragment="title">Lista de tarefas</title>
+</head>
+<body>
+   <main>
+        <h1>Lista de tarefas</h1>
+
+        <table class="table table-striped" th:unless="${#lists.isEmpty( todos )}">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Título</th>
+                <th scope="col">Criado em</th>
+                <th scope="col">Data de entrega</th>
+                <th scope="col">Finalizado em</th>
+                <th scope="col">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="todo : ${todos}">
+                <th scope="row" th:text="${todo.id}">ID</th>
+                    <td th:text="${todo.title}">Title</td>
+                <td th:text="${#temporals.format( todo.createdAt )}">Criado</td>
+                <td th:text="${#temporals.format( todo.deadLine )}">Prazo final</td>
+                <td th:text="${#temporals.format( todo.finishedAt ) ?: '-'}">Finalizado em</td>
+                <td>
+                    <form class="d-inline" th:action="@{/finish/{id}(id=${todo.id})}" method="post">
+                        <button type="submit"
+                                class="btn btn-sn btn-primary"
+                                th:classappend="${todo.finishedAt} ? 'disabled' : ''"
+                        >
+                            Concluir
+                        </button>
+                    </form>
+                    <a th:href="@{/edit/{id}(id=${todo.id})}"
+                       class="btn btn-sn btn-secondary"
+                       th:classappend="${todo.finishedAt} ? 'disabled' : ''"
+                    >
+                        Editar
+                    </a>
+                    <a th:href="@{/delete/{id}(id=${todo.id})}"  class="btn btn-sn btn-danger">Excluir</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p th:if="${#lists.isEmpty( todos )}">Nenhuma tarefa cadastrada</p>
+        <a th:href="@{/create}" class="btn btn-sn btn-primary">Nova tarefa</a>
+    </main>
+</body>
+</html>
